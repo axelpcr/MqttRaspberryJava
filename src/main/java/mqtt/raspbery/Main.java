@@ -5,35 +5,38 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class Main implements MqttCallback {
 
-    private MqttClient client;
+    private MqttClient  client = new MqttClient("tcp://localhost:1883", "Sending");
     private final String topic = "JavaMqttLover";
 
-    private Main() {
+    private Main() throws MqttException {
     }
 
     public static void main(String[] args) {
-        new Main().doDemo();
+        try {
+            new Main().doDemo();
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
     private void doDemo() {
-        while(true) {
-            try {
-                client = new MqttClient("tcp://localhost:1883", "Sending");
-                client.connect();
-                client.setCallback(this);
-                MqttMessage mqttMessageDate = new MqttMessage(new Date().toString().getBytes());
-                String topic = "JavaMqttLover";
-                client.publish(topic, mqttMessageDate);
-                TimeUnit.SECONDS.sleep(1);
-            } catch (MqttException | InterruptedException e) {
-                System.out.println("Rien à foutre");
-            }
+        try {
+
+            client.connect();
+            client.setCallback(this);
+            client.subscribe(topic);
+            MqttMessage message = new MqttMessage();
+            message.setPayload("A single message from my computer fff"
+                    .getBytes());
+            client.publish(topic, message);
+        } catch (MqttException e) {
+            e.printStackTrace();
         }
     }
 
