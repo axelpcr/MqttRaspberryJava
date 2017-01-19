@@ -5,6 +5,8 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -31,25 +33,28 @@ public class Main implements MqttCallback {
                 String topic = "JavaMqttLover";
                 client.publish(topic, mqttMessageDate);
                 TimeUnit.SECONDS.sleep(1);
-            } catch (MqttException | InterruptedException e) {
+            } catch (MqttPersistenceException e) {
+                e.printStackTrace();
+            } catch (MqttSecurityException e) {
+                e.printStackTrace();
+            } catch (MqttException e) {
                 System.out.println("Rien à foutre");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    @Override
     public void connectionLost(Throwable cause) {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
     public void messageArrived(String topic, MqttMessage message)
             throws Exception {
         System.out.println(message);
     }
 
-    @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
         // TODO Auto-generated method stub
 
